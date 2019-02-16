@@ -1,0 +1,10 @@
+namespace FINAL_TASK.db;
+
+context Musician {
+    entity musician {
+        key mid         : String(5);
+            name        : String(100);
+            age         : Integer not null;
+            description : String(300);
+    };
+};

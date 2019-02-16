@@ -1,0 +1,90 @@
+ID: FINAL_TASK
+_schema-version: '2.1'
+parameters:
+  deploy_mode: html5-repo
+version: 0.0.1
+modules:
+  - name: FINAL_TASK_appRouter
+    type: approuter.nodejs
+    path: FINAL_TASK_appRouter
+    parameters:
+      disk-quota: 256M
+      memory: 256M
+    requires:
+      - name: rt_FINAL_TASK_appRouter
+      - name: uaa_FINAL_TASK
+  - name: FINAL_TASK_ui_deployer
+    type: com.sap.html5.application-content
+    path: FINAL_TASK_ui_deployer
+    parameters:
+      disk-quota: 256M
+      memory: 256M
+    requires:
+      - name: dt_FINAL_TASK_ui_deployer
+    build-parameters:
+      requires:
+        - name: musicianui
+          artifacts:
+            - './*'
+          target-path: resources/musicianui
+  - name: db
+    type: hdb
+    path: db
+    parameters:
+      disk-quota: 256M
+      memory: 256M
+    requires:
+      - name: hdi_db
+  - name: js
+    type: nodejs
+    path: js
+    parameters:
+      memory: 512M
+      disk-quota: 512M
+    provides:
+      - name: js_api
+        properties:
+          url: '${default-url}'
+  - name: musicianui
+    type: html5
+    path: musicianui
+    parameters:
+      disk-quota: 256M
+      memory: 256M
+    build-parameters:
+      builder: grunt
+resources:
+  - name: rt_FINAL_TASK_appRouter
+    parameters:
+      service-plan: app-runtime
+      service: html5-apps-repo
+    type: org.cloudfoundry.managed-service
+  - name: dt_FINAL_TASK_ui_deployer
+    parameters:
+      service-plan: app-host
+      service: html5-apps-repo
+    type: org.cloudfoundry.managed-service
+  - name: hdi_db
+    parameters:
+      service-plan: hdi-shared
+      service: hanatrial
+      config: {schema: AT}
+    properties:
+      hdi-container-name: '${service-name}'
+    type: com.sap.xs.hdi-container
+  - name: connectivity
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: connectivity
+      service-plan: lite
+  - name: destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+  - name: uaa_FINAL_TASK
+    parameters:
+      path: ./xs-security.json
+      service-plan: application
+      service: xsuaa
+    type: org.cloudfoundry.managed-service
