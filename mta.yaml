@@ -4,23 +4,23 @@ parameters:
   deploy_mode: html5-repo
 version: 0.0.1
 modules:
-  - name: FINAL_TASK_appRouter
-    type: approuter.nodejs
+  - name: router
+    type: nodejs
     path: FINAL_TASK_appRouter
     parameters:
       disk-quota: 256M
       memory: 256M
     requires:
-      - name: rt_FINAL_TASK_appRouter
-      - name: uaa_FINAL_TASK
-  - name: FINAL_TASK_ui_deployer
+      - name: pt_router
+      - name: pt_uaa
+  - name: deployer
     type: com.sap.html5.application-content
     path: FINAL_TASK_ui_deployer
     parameters:
       disk-quota: 256M
       memory: 256M
     requires:
-      - name: dt_FINAL_TASK_ui_deployer
+      - name: pt_deployer
     build-parameters:
       requires:
         - name: musicianui
@@ -54,15 +54,16 @@ modules:
     build-parameters:
       builder: grunt
 resources:
-  - name: rt_FINAL_TASK_appRouter
+  - name: pt_router
     parameters:
       service-plan: app-runtime
       service: html5-apps-repo
     type: org.cloudfoundry.managed-service
-  - name: dt_FINAL_TASK_ui_deployer
+  - name: pt_deployer
     parameters:
       service-plan: app-host
       service: html5-apps-repo
+      config: {sizeLimit: 1}
     type: org.cloudfoundry.managed-service
   - name: hdi_db
     parameters:
@@ -82,7 +83,7 @@ resources:
     parameters:
       service: destination
       service-plan: lite
-  - name: uaa_FINAL_TASK
+  - name: pt_uaa
     parameters:
       path: ./xs-security.json
       service-plan: application
